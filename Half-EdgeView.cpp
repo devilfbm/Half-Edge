@@ -95,13 +95,93 @@ int CHalfEdgeView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	//Frame 2:加入初始化方法
-	myInit();
 	// TODO:  在此添加您专用的创建代码
 
+	//Frame 2:加入初始化方法
+	myInit();
 	return 0;
 }
 
+// Frame 3:
+// myInit()
+//		初始化DC对象，并为其选择像素格式，据此创建RC对象，最后选择该RC
+
+BOOL CHalfEdgeView::myInit()
+{
+	//Get a DC for the Client Area
+	m_pDC = new CClientDC(this);
+	//Failure to Get DC
+	if (m_pDC == NULL)
+	{
+		MessageBox((LPCTSTR)"Error Obtaining DC");
+		return FALSE;
+	}
+	//Failure to set the pixel format
+	if (!setupPixelFormat())
+	{
+		return FALSE;
+	}
+	//Create Rendering Context
+	m_hRC = ::wglCreateContext(m_pDC->GetSafeHdc());
+	//Failure to Create Rendering Context
+	if (m_hRC == 0)
+	{
+		MessageBox((LPCTSTR)"Error Creating RC");
+		return FALSE;
+	}
+	//Make the RC Current
+	if (::wglMakeCurrent(m_pDC->GetSafeHdc(), m_hRC) == FALSE)
+	{
+		MessageBox((LPCTSTR)"Error making RC Current");
+		return FALSE;
+	}
+	//Specify Black as the clear color
+	::glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	//Specify the back of the buffer as clear depth
+	::glClearDepth(1.0f);
+	//Enable Depth Testing
+	::glEnable(GL_DEPTH_TEST);
+	return TRUE;
+}
+
+// Frame 4:
+// setupPixelFormat()
+//		设置像素格式
+
+BOOL CHalfEdgeView::setupPixelFormat()
+{
+	static PIXELFORMATDESCRIPTOR pfd =
+	{
+		sizeof(PIXELFORMATDESCRIPTOR),  // size of this pfd
+		1,                              // version number
+		PFD_DRAW_TO_WINDOW |            // support window
+		PFD_SUPPORT_OPENGL |            // support OpenGL
+		PFD_DOUBLEBUFFER,                // double buffered
+		PFD_TYPE_RGBA,                  // RGBA type
+		24,                             // 24-bit color depth
+		0, 0, 0, 0, 0, 0,               // color bits ignored
+		0,                              // no alpha buffer
+		0,                              // shift bit ignored
+		0,                              // no accumulation buffer
+		0, 0, 0, 0,                     // accum bits ignored
+		16,                             // 16-bit z-buffer
+		0,                              // no stencil buffer
+		0,                              // no auxiliary buffer
+		PFD_MAIN_PLANE,                 // main layer
+		0,                              // reserved
+		0, 0, 0                         // layer masks ignored
+	};
+	int m_nPixelFormat = ::ChoosePixelFormat(m_pDC->GetSafeHdc(), &pfd);
+	if (m_nPixelFormat == 0)
+	{
+		return FALSE;
+	}
+	if (::SetPixelFormat(m_pDC->GetSafeHdc(), m_nPixelFormat, &pfd) == FALSE)
+	{
+		return FALSE;
+	}
+	return TRUE;
+}
 
 void CHalfEdgeView::OnDestroy()
 {
