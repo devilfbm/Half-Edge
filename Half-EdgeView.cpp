@@ -55,7 +55,7 @@ BOOL CHalfEdgeView::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 // CHalfEdgeView 绘制
-
+// Frame 6:
 void CHalfEdgeView::OnDraw(CDC* /*pDC*/)
 {
 	CHalfEdgeDoc* pDoc = GetDocument();
@@ -64,8 +64,19 @@ void CHalfEdgeView::OnDraw(CDC* /*pDC*/)
 		return;
 
 	// TODO:  在此处为本机数据添加绘制代码
+
+	// Clear out the color & depth buffers
+	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	display();
+	// Tell OpenGL to flush its pipeline
+	::glFinish();
+	// Now Swap the buffers
+	::SwapBuffers(m_pDC->GetSafeHdc());
 }
 
+void CHalfEdgeView::display()
+{
+}
 
 // CHalfEdgeView 诊断
 
@@ -97,7 +108,7 @@ int CHalfEdgeView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	// TODO:  在此添加您专用的创建代码
 
-	//Frame 2:加入初始化方法
+	// Frame 2:加入初始化方法
 	myInit();
 	return 0;
 }
@@ -108,38 +119,64 @@ int CHalfEdgeView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 BOOL CHalfEdgeView::myInit()
 {
-	//Get a DC for the Client Area
+	// 从客户区DC获得DC，自动构造与析构DC
 	m_pDC = new CClientDC(this);
-	//Failure to Get DC
+	// 获取DC失败，报错
 	if (m_pDC == NULL)
 	{
-		MessageBox((LPCTSTR)"Error Obtaining DC");
+		// Frame 3.1:
+		//		char转换为LPCTSTR产生乱码问题解决
+		//		char与wchar的转换本质是ansi与Unicode的转换
+		//		LPCTSTR是LPCWSTR，W意指wide char
+		//		LPCSTR意指char
+		char *dCh = "Error Obtaining DC";
+		wchar_t *w_str;
+		w_str = new wchar_t[19];
+		w_str[18] = 0;
+		if (!w_str)
+			delete []w_str;
+		MultiByteToWideChar(CP_ACP, 0, dCh, -1, w_str, 18);
+		MessageBox((LPCTSTR)w_str);
 		return FALSE;
 	}
-	//Failure to set the pixel format
+	//不能设置像素格式
 	if (!setupPixelFormat())
 	{
 		return FALSE;
 	}
-	//Create Rendering Context
+	//创建RC
 	m_hRC = ::wglCreateContext(m_pDC->GetSafeHdc());
-	//Failure to Create Rendering Context
+	//创建RC失败，报错
 	if (m_hRC == 0)
 	{
-		MessageBox((LPCTSTR)"Error Creating RC");
+		char *rCh = "Error Obtaining RC";
+		wchar_t *w_strc;
+		w_strc = new wchar_t[19];
+		w_strc[18] = 0;
+		if (!w_strc)
+			delete[]w_strc;
+		MultiByteToWideChar(CP_ACP, 0, rCh, -1, w_strc, 18);
+		MessageBox((LPCTSTR)w_strc);
 		return FALSE;
 	}
-	//Make the RC Current
+	//创建RC Current
 	if (::wglMakeCurrent(m_pDC->GetSafeHdc(), m_hRC) == FALSE)
 	{
-		MessageBox((LPCTSTR)"Error making RC Current");
+		char *rCh = "Error making RC Current";
+		wchar_t *w_strc;
+		w_strc = new wchar_t[19];
+		w_strc[18] = 0;
+		if (!w_strc)
+			delete[]w_strc;
+		MultiByteToWideChar(CP_ACP, 0, rCh, -1, w_strc, 18);
+		MessageBox((LPCTSTR)w_strc);
 		return FALSE;
 	}
-	//Specify Black as the clear color
+	//背景色定义为黑色
 	::glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	//Specify the back of the buffer as clear depth
+	//
 	::glClearDepth(1.0f);
-	//Enable Depth Testing
+	//深度检测
 	::glEnable(GL_DEPTH_TEST);
 	return TRUE;
 }
@@ -152,24 +189,20 @@ BOOL CHalfEdgeView::setupPixelFormat()
 {
 	static PIXELFORMATDESCRIPTOR pfd =
 	{
-		sizeof(PIXELFORMATDESCRIPTOR),  // size of this pfd
-		1,                              // version number
-		PFD_DRAW_TO_WINDOW |            // support window
-		PFD_SUPPORT_OPENGL |            // support OpenGL
-		PFD_DOUBLEBUFFER,                // double buffered
-		PFD_TYPE_RGBA,                  // RGBA type
-		24,                             // 24-bit color depth
-		0, 0, 0, 0, 0, 0,               // color bits ignored
-		0,                              // no alpha buffer
-		0,                              // shift bit ignored
-		0,                              // no accumulation buffer
-		0, 0, 0, 0,                     // accum bits ignored
-		16,                             // 16-bit z-buffer
-		0,                              // no stencil buffer
-		0,                              // no auxiliary buffer
-		PFD_MAIN_PLANE,                 // main layer
-		0,                              // reserved
-		0, 0, 0                         // layer masks ignored
+		sizeof(PIXELFORMATDESCRIPTOR),  // 大小
+		1,                              // 版本号
+		PFD_DRAW_TO_WINDOW |            // 支持窗口
+		PFD_SUPPORT_OPENGL |            // 支持OGL
+		PFD_DOUBLEBUFFER,               // 双缓冲模式
+		PFD_TYPE_RGBA,                  // RGBA色彩模式
+		24,                             // 24-bit颜色深度
+		0, 0, 0, 0, 0, 0,               // 
+		0,                              // alpha-buffer深度
+		0, 0, 0, 0, 0, 0,               // 
+		16,                             // z-buffer深度
+		0, 0,                           // 
+		PFD_MAIN_PLANE,                 // 主图层
+		0, 0, 0, 0                      // 
 	};
 	int m_nPixelFormat = ::ChoosePixelFormat(m_pDC->GetSafeHdc(), &pfd);
 	if (m_nPixelFormat == 0)
@@ -183,25 +216,91 @@ BOOL CHalfEdgeView::setupPixelFormat()
 	return TRUE;
 }
 
+// Frame 8:
+//		内存泄露问题：释放RC/DC
 void CHalfEdgeView::OnDestroy()
 {
 	CView::OnDestroy();
 
 	// TODO:  在此处添加消息处理程序代码
+
+	// RC non-current
+	if (::wglMakeCurrent(0, 0) == FALSE)
+	{
+		char *rCh = "Could not make RC non-current";
+		wchar_t *w_strc;
+		w_strc = new wchar_t[19];
+		w_strc[18] = 0;
+		if (!w_strc)
+			delete[]w_strc;
+		MultiByteToWideChar(CP_ACP, 0, rCh, -1, w_strc, 18);
+		MessageBox((LPCTSTR)w_strc);
+	}
+
+	// 删除RC
+	if (::wglDeleteContext(m_hRC) == FALSE)
+	{
+		char *dCh = "Could not delete RC";
+		wchar_t *w_str;
+		w_str = new wchar_t[19];
+		w_str[18] = 0;
+		if (!w_str)
+			delete[]w_str;
+		MultiByteToWideChar(CP_ACP, 0, dCh, -1, w_str, 18);
+		MessageBox((LPCTSTR)w_str);
+	}
+	// 删除DC
+	if (m_pDC)
+	{
+		delete m_pDC;
+	}
+	//Set it to NULL
+	m_pDC = NULL;
 }
 
-
+// Frame 5:
 void CHalfEdgeView::OnSize(UINT nType, int cx, int cy)
 {
 	CView::OnSize(nType, cx, cy);
 
 	// TODO:  在此处添加消息处理程序代码
+
+	GLdouble aspect_ratio; // width/height ratio
+
+	if (0 >= cx || 0 >= cy)
+	{
+		return;
+	}
+
+	// select the full client area
+	::glViewport(0, 0, cx, cy);
+
+	// compute the aspect ratio
+	// this will keep all dimension scales equal
+	aspect_ratio = (GLdouble)cx / (GLdouble)cy;
+
+	// select the projection matrix and clear it
+	::glMatrixMode(GL_PROJECTION);
+
+	::glLoadIdentity();
+
+	// select the viewing volume
+	::gluPerspective(45.0f, aspect_ratio, .01f, 200.0f);
+
+	// switch back to the modelview matrix and clear it
+	::glMatrixMode(GL_MODELVIEW);
+
+	::glLoadIdentity();
 }
 
 
+// Frame 7:
+//		拉伸窗口闪烁问题：Windows不需要再清除背景
 BOOL CHalfEdgeView::OnEraseBkgnd(CDC* pDC)
 {
 	// TODO:  在此添加消息处理程序代码和/或调用默认值
-
-	return CView::OnEraseBkgnd(pDC);
+	// Old：
+	// return CView::OnEraseBkgnd(pDC);
+	// Now:
+	return TRUE;
 }
