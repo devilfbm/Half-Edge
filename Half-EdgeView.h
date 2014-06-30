@@ -28,6 +28,29 @@ public:
 public:
 	void display();            
 
+// Frame 9:
+//		基本图元状态
+protected:
+	BOOL m_bPoint;
+	BOOL m_bLine;
+	BOOL m_bPolygon;
+	BOOL m_bTriangle;
+	BOOL m_bCube;
+	BOOL m_bTorus;
+	BOOL m_bTeapot;
+	BOOL m_bIcosahedron;
+	BOOL m_bSimpleCube;
+
+// Frame 10:
+//		事件处理函数
+public:
+	void OnObjectsTeapot();
+	void OnObjectsCube();
+	void OnObjectsIcosahedron();
+	void OnObjectsTorus();
+	void OnObjectsSimplecube();
+
+
 // 特性
 public:
 	CHalfEdgeDoc* GetDocument() const;

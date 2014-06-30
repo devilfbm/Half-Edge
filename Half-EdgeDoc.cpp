@@ -135,3 +135,14 @@ void CHalfEdgeDoc::Dump(CDumpContext& dc) const
 
 
 // CHalfEdgeDoc 命令
+
+
+BOOL CHalfEdgeDoc::OnOpenDocument(LPCTSTR lpszPathName)
+{
+	if (!CDocument::OnOpenDocument(lpszPathName))
+		return FALSE;
+
+	// TODO:  在此添加您专用的创建代码
+
+	return TRUE;
+}

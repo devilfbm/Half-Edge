@@ -29,11 +29,20 @@ BEGIN_MESSAGE_MAP(CHalfEdgeView, CView)
 END_MESSAGE_MAP()
 
 // CHalfEdgeView 构造/析构
-
+// Frame 9:
+//		设置标记
 CHalfEdgeView::CHalfEdgeView()
 {
 	// TODO:  在此处添加构造代码
-
+	m_bPoint = FALSE;
+	m_bLine = FALSE;
+	m_bPolygon = FALSE;
+	m_bTriangle = FALSE;
+	m_bCube = FALSE;
+	m_bTorus = FALSE;
+	m_bTeapot = FALSE;
+	m_bIcosahedron = TRUE;
+	m_bSimpleCube = FALSE;
 }
 
 CHalfEdgeView::~CHalfEdgeView()
@@ -65,17 +74,180 @@ void CHalfEdgeView::OnDraw(CDC* /*pDC*/)
 
 	// TODO:  在此处为本机数据添加绘制代码
 
-	// Clear out the color & depth buffers
+	// 
 	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	display();
-	// Tell OpenGL to flush its pipeline
+	// Flush
 	::glFinish();
-	// Now Swap the buffers
+	// 交互
 	::SwapBuffers(m_pDC->GetSafeHdc());
+}
+
+// Frame 10:
+//		描绘物体的事件处理程序
+// 茶壶
+void CHalfEdgeView::OnObjectsTeapot()
+{
+	m_bCube = FALSE;
+	m_bTorus = FALSE;
+	m_bTeapot = TRUE;
+	m_bIcosahedron = FALSE;
+	m_bSimpleCube = FALSE;
+	InvalidateRect(NULL, FALSE);
+}
+
+// 立方体
+void CHalfEdgeView::OnObjectsCube()
+{
+	m_bCube = TRUE;
+	m_bTorus = FALSE;
+	m_bTeapot = FALSE;
+	m_bIcosahedron = FALSE;
+	m_bSimpleCube = FALSE;
+	InvalidateRect(NULL, FALSE);
+}
+
+// 二十面体
+void CHalfEdgeView::OnObjectsIcosahedron()
+{
+	m_bCube = FALSE;
+	m_bTorus = FALSE;
+	m_bTeapot = FALSE;
+	m_bIcosahedron = TRUE;
+	m_bSimpleCube = FALSE;
+	InvalidateRect(NULL, FALSE);
+}
+
+// 环
+void CHalfEdgeView::OnObjectsTorus()
+{
+	m_bCube = FALSE;
+	m_bTorus = TRUE;
+	m_bTeapot = FALSE;
+	m_bIcosahedron = FALSE;
+	m_bSimpleCube = FALSE;
+	InvalidateRect(NULL, FALSE);
+}
+
+// 简单立方体
+void CHalfEdgeView::OnObjectsSimplecube()
+{
+	m_bCube = FALSE;
+	m_bTorus = FALSE;
+	m_bTeapot = FALSE;
+	m_bIcosahedron = FALSE;
+	m_bSimpleCube = TRUE;
+	InvalidateRect(NULL, FALSE);
 }
 
 void CHalfEdgeView::display()
 {
+	if (m_bPoint == TRUE)
+	{
+		glPointSize(3.0f);
+		glBegin(GL_POINTS);
+		glVertex2f(0.0f, 0.0f);
+		glVertex2f(1.0f, 0.0f);
+		glVertex2f(0.0f, 1.0f);
+		glEnd();
+	}
+	if (m_bLine == TRUE)
+	{
+		glBegin(GL_LINES);
+		glVertex2f(0.0f, 0.0f);
+		glVertex2f(1.0f, 0.0f);
+		glEnd();
+	}
+	if (m_bTriangle == TRUE)
+	{
+		glBegin(GL_TRIANGLES);
+		glVertex2f(0.0f, 0.0f);
+		glVertex2f(2.0f, 0.0f);
+		glVertex2f(0.0f, 2.0f);
+		glEnd();
+	}
+	if (m_bPolygon == TRUE)
+	{
+		glBegin(GL_POLYGON);
+		glVertex2f(0.0f, 0.0f);
+		glVertex2f(3.0f, 0.0f);
+		glVertex2f(4.0f, 3.0f);
+		glVertex2f(1.5f, 6.0f);
+		glVertex2f(-1.0f, 3.0f);
+		glEnd();
+	}
+	//Replace the current matrix with Identity Matrix
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, -5.0f);
+	glRotatef(-30.0f, 1.0f, 1.0f, 0.0f);
+	//Draw a Cube
+	if (m_bCube)
+	{
+		glutWireCube(1.0f);
+	}
+	//Draw a Torus
+	if (m_bTorus)
+	{
+		glutWireTorus(0.5f, 1.0f, 50, 50);
+	}
+	//Draw a Teapot
+	if (m_bTeapot)
+	{
+		glutWireTeapot(1.0f);
+	}
+	//Draw a Icosahedron
+	if (m_bIcosahedron)
+	{
+		glutWireIcosahedron();
+	}
+	//Draw a cube by specifying the vertices individually
+	if (m_bSimpleCube)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		//Front Face
+		glBegin(GL_POLYGON);
+		glVertex3f(-1.0f, -1.0f, 0.0f);
+		glVertex3f(1.0f, -1.0f, 0.0f);
+		glVertex3f(1.0f, 1.0f, 0.0f);
+		glVertex3f(-1.0f, 1.0f, 0.0f);
+		glEnd();
+		//Back Face
+		glBegin(GL_POLYGON);
+		glVertex3f(-1.0f, -1.0f, -1.0f);
+		glVertex3f(-1.0f, 1.0f, -1.0f);
+		glVertex3f(1.0f, 1.0f, -1.0f);
+		glVertex3f(1.0f, -1.0f, -1.0f);
+		glEnd();
+		//Left Face
+		glBegin(GL_POLYGON);
+		glVertex3f(-1.0f, -1.0f, 0.0f);
+		glVertex3f(-1.0f, 1.0f, 0.0f);
+		glVertex3f(-1.0f, 1.0f, -1.0f);
+		glVertex3f(-1.0f, -1.0f, -1.0f);
+		glEnd();
+		//Right Face
+		glBegin(GL_POLYGON);
+		glVertex3f(1.0f, -1.0f, 0.0f);
+		glVertex3f(1.0f, -1.0f, -1.0f);
+		glVertex3f(1.0f, 1.0f, -1.0f);
+		glVertex3f(1.0f, 1.0f, 0.0f);
+		glEnd();
+		//Top Face
+		glBegin(GL_POLYGON);
+		glVertex3f(-1.0f, 1.0f, 0.0f);
+		glVertex3f(1.0f, 1.0f, 0.0f);
+		glVertex3f(1.0f, 1.0f, -1.0f);
+		glVertex3f(-1.0f, 1.0f, -1.0f);
+		glEnd();
+		//Botton Face
+		glBegin(GL_POLYGON);
+		glVertex3f(-1.0f, -1.0f, 0.0f);
+		glVertex3f(-1.0f, -1.0f, -1.0f);
+		glVertex3f(1.0f, -1.0f, -1.0f);
+		glVertex3f(1.0f, -1.0f, 0.0f);
+		glEnd();
+	}
 }
 
 // CHalfEdgeView 诊断
@@ -259,6 +431,7 @@ void CHalfEdgeView::OnDestroy()
 }
 
 // Frame 5:
+//		改变窗口大小的时候使用的函数，相当于ogl的reshape
 void CHalfEdgeView::OnSize(UINT nType, int cx, int cy)
 {
 	CView::OnSize(nType, cx, cy);
@@ -267,29 +440,26 @@ void CHalfEdgeView::OnSize(UINT nType, int cx, int cy)
 
 	GLdouble aspect_ratio; // width/height ratio
 
-	if (0 >= cx || 0 >= cy)
+	if (cx <= 0 || cy <= 0)
 	{
 		return;
 	}
 
-	// select the full client area
+	// 选择整个客户区
 	::glViewport(0, 0, cx, cy);
 
-	// compute the aspect ratio
-	// this will keep all dimension scales equal
+	// 计算方位角
 	aspect_ratio = (GLdouble)cx / (GLdouble)cy;
 
-	// select the projection matrix and clear it
+	// 切换到PROJECTION,单位化
 	::glMatrixMode(GL_PROJECTION);
-
 	::glLoadIdentity();
 
-	// select the viewing volume
+	// 透视变换
 	::gluPerspective(45.0f, aspect_ratio, .01f, 200.0f);
 
-	// switch back to the modelview matrix and clear it
+	// 切换到MODELVIEW，单位化
 	::glMatrixMode(GL_MODELVIEW);
-
 	::glLoadIdentity();
 }
 
