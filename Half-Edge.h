@@ -16,6 +16,7 @@
 
 class CHalfEdgeApp : public CWinApp
 {
+
 public:
 	CHalfEdgeApp();
 

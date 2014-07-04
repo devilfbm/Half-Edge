@@ -70,6 +70,7 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\Half-Edge.ico"
 IDR_HalfEdgeTYPE        ICON                    "res\\Half-EdgeDoc.ico"
+IDI_ICON1               ICON                    "res\\icon1.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -206,6 +207,30 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_TOOLBAR1 TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_BUTTON32772
+    BUTTON      ID_BUTTON32782
+    BUTTON      ID_BUTTON32784
+    BUTTON      ID_BUTTON32785
+    BUTTON      ID_BUTTON32787
+    BUTTON      ID_BUTTON32788
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_TOOLBAR1            BITMAP                  "res\\toolbar1.bmp"
+IDR_TOOLBAR2            BITMAP                  "res\\toolbar2.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

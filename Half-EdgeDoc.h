@@ -4,17 +4,15 @@
 
 
 #pragma once
-
-
 class CHalfEdgeDoc : public CDocument
 {
 protected: // 仅从序列化创建
 	CHalfEdgeDoc();
 	DECLARE_DYNCREATE(CHalfEdgeDoc)
 
-// 特性
-public:
+	SourceManager *sourceManager;
 
+// 特性
 // 操作
 public:
 
@@ -36,7 +34,7 @@ public:
 #endif
 
 protected:
-
+	void InitDocument();
 // 生成的消息映射函数
 protected:
 	DECLARE_MESSAGE_MAP()

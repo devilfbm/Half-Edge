@@ -31,25 +31,24 @@ public:
 // Frame 9:
 //		基本图元状态
 protected:
-	BOOL m_bPoint;
-	BOOL m_bLine;
-	BOOL m_bPolygon;
-	BOOL m_bTriangle;
-	BOOL m_bCube;
-	BOOL m_bTorus;
-	BOOL m_bTeapot;
-	BOOL m_bIcosahedron;
-	BOOL m_bSimpleCube;
+
+// Frame 14:
+//		鼠标控制
+
+	GLfloat m_xAngle;
+	GLfloat m_yAngle;
+	GLfloat m_xPos;
+	GLfloat m_yPos;
+	CPoint m_MouseDownPoint;
 
 // Frame 10:
 //		事件处理函数
 public:
-	void OnObjectsTeapot();
-	void OnObjectsCube();
-	void OnObjectsIcosahedron();
-	void OnObjectsTorus();
-	void OnObjectsSimplecube();
 
+	void OnLButtonDown(UINT nFlags, CPoint point);
+	void OnLButtonUp(UINT nFlags, CPoint point);
+	void OnMouseMove(UINT nFlags, CPoint point);
+	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 // 特性
 public:
@@ -82,6 +81,12 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnButton32772();
+	afx_msg void OnButton32782();
+	afx_msg void OnButton32784();
+	afx_msg void OnButton32785();
+	afx_msg void OnButton32787();
+	afx_msg void OnButton32788();
 };
 
 #ifndef _DEBUG  // Half-EdgeView.cpp 中的调试版本

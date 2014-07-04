@@ -23,7 +23,7 @@ BEGIN_MESSAGE_MAP(CHalfEdgeApp, CWinApp)
 	// 基于文件的标准文档命令
 	ON_COMMAND(ID_FILE_NEW, &CWinApp::OnFileNew)
 	ON_COMMAND(ID_FILE_OPEN, &CWinApp::OnFileOpen)
-	ON_COMMAND(ID_FILE_MYOPEN, &CHalfEdgeApp::OnFileMyopen)
+	//ON_COMMAND(ID_FILE_MYOPEN, &CHalfEdgeApp::OnFileMyopen)
 END_MESSAGE_MAP()
 
 
@@ -178,15 +178,19 @@ void CHalfEdgeApp::OnAppAbout()
 // CHalfEdgeApp 消息处理程序
 
 
-// Frame 11:
+// Frame 11(已经弃用):
 //		重写打开文件函数
 //		imply读入obj文件
 void CHalfEdgeApp::OnFileMyopen()
 {
 	// TODO:  在此添加命令处理程序代码
-	static char BASED_CODE szFilter[] = "BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*||";
+	static char BASED_CODE szFilter[] = "OBJ Files (*.obj)|*.obj|All Files (*.*)|*.*||";
 	CString FilePathName;
 	CFileDialog dlg(TRUE);///TRUE为OPEN对话框，FALSE为SAVE AS对话框
 	if (dlg.DoModal() == IDOK)
+	{
 		FilePathName = dlg.GetPathName();
+		// 在这里弹出自己的打开文件对话框
+		// 直接调用OpenDocumentFile(newName)
+	}
 }

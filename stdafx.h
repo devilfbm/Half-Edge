@@ -50,8 +50,8 @@
 //不使用该宏可能导致错误
 #define GLUT_DISABLE_ATEXIT_HACK
 #include <gl/glut.h>
-
-
+#include <glm/glm.hpp>
+#include "SourceManager.h"
 
 
 #ifdef _UNICODE

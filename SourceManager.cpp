@@ -4,6 +4,20 @@
 
 SourceManager::SourceManager()
 {
+	count = 0;
+}
+
+
+void SourceManager::Clear()
+{
+	if (!ResList.empty())
+	{
+		ResList.clear();
+		out_vertices_list.clear();
+		out_uvs_list.clear();
+		out_normals_list.clear();
+		count = 0;
+	}
 }
 void SourceManager::Add(const char * path)
 {
@@ -11,8 +25,9 @@ void SourceManager::Add(const char * path)
 	std::vector<glm::vec3> out_vertices;
 	std::vector<glm::vec2> out_uvs;
 	std::vector<glm::vec3> out_normals;
-	if (LoadOBJ(path, out_vertices, out_uvs, out_normals))
+	if (LoadOBJ(path, out_vertices, out_uvs, out_normals) == TRUE)
 	{
+		count++;
 		ResList.push_back(path);
 		out_normals_list.push_back(out_normals);
 		out_uvs_list.push_back(out_uvs);
@@ -104,3 +119,4 @@ bool SourceManager::LoadOBJ(
 SourceManager::~SourceManager()
 {
 }
+

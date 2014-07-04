@@ -16,6 +16,15 @@
 #define new DEBUG_NEW
 #endif
 
+//光照参数
+//W = 0.0f 无穷远光
+GLfloat LightPos[4] = { .0f, .0f, .0f, 1.0f };
+GLfloat SunLightPos[4] = { .0f, 5.0f, .0f, 1.0f };
+GLfloat NoLight[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+GLfloat LowLight[] = { 0.25f, 0.25f, 0.25f, 1.0f };
+GLfloat BrightLight[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat EmissiveLight[] = { 1.0f, 0.87f, 0.27f, 0.5f };
+GLfloat SunEmissiveLight[] = { 0.5f, 0.37f, 0.27f, 0.5f };
 
 // CHalfEdgeView
 
@@ -26,6 +35,12 @@ BEGIN_MESSAGE_MAP(CHalfEdgeView, CView)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
+	ON_COMMAND(ID_BUTTON32772, &CHalfEdgeView::OnButton32772)
+	ON_COMMAND(ID_BUTTON32782, &CHalfEdgeView::OnButton32782)
+	ON_COMMAND(ID_BUTTON32784, &CHalfEdgeView::OnButton32784)
+	ON_COMMAND(ID_BUTTON32785, &CHalfEdgeView::OnButton32785)
+	ON_COMMAND(ID_BUTTON32787, &CHalfEdgeView::OnButton32787)
+	ON_COMMAND(ID_BUTTON32788, &CHalfEdgeView::OnButton32788)
 END_MESSAGE_MAP()
 
 // CHalfEdgeView 构造/析构
@@ -34,15 +49,12 @@ END_MESSAGE_MAP()
 CHalfEdgeView::CHalfEdgeView()
 {
 	// TODO:  在此处添加构造代码
-	m_bPoint = FALSE;
-	m_bLine = FALSE;
-	m_bPolygon = FALSE;
-	m_bTriangle = FALSE;
-	m_bCube = FALSE;
-	m_bTorus = FALSE;
-	m_bTeapot = FALSE;
-	m_bIcosahedron = TRUE;
-	m_bSimpleCube = FALSE;
+
+
+	m_xPos = 0.0f;
+	m_yPos = 0.0f;
+	m_xAngle = 0.0f;
+	m_yAngle = 0.0f;
 }
 
 CHalfEdgeView::~CHalfEdgeView()
@@ -75,179 +87,41 @@ void CHalfEdgeView::OnDraw(CDC* /*pDC*/)
 	// TODO:  在此处为本机数据添加绘制代码
 
 	// 
-	::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	display();
 	// Flush
-	::glFinish();
-	// 交互
-	::SwapBuffers(m_pDC->GetSafeHdc());
+	glFinish();
+	// 交换buffer？
+	SwapBuffers(m_pDC->GetSafeHdc());
+	Invalidate();
 }
 
-// Frame 10:
+// Frame 10(已经弃用):
 //		描绘物体的事件处理程序
-// 茶壶
-void CHalfEdgeView::OnObjectsTeapot()
-{
-	m_bCube = FALSE;
-	m_bTorus = FALSE;
-	m_bTeapot = TRUE;
-	m_bIcosahedron = FALSE;
-	m_bSimpleCube = FALSE;
-	InvalidateRect(NULL, FALSE);
-}
-
-// 立方体
-void CHalfEdgeView::OnObjectsCube()
-{
-	m_bCube = TRUE;
-	m_bTorus = FALSE;
-	m_bTeapot = FALSE;
-	m_bIcosahedron = FALSE;
-	m_bSimpleCube = FALSE;
-	InvalidateRect(NULL, FALSE);
-}
-
-// 二十面体
-void CHalfEdgeView::OnObjectsIcosahedron()
-{
-	m_bCube = FALSE;
-	m_bTorus = FALSE;
-	m_bTeapot = FALSE;
-	m_bIcosahedron = TRUE;
-	m_bSimpleCube = FALSE;
-	InvalidateRect(NULL, FALSE);
-}
-
-// 环
-void CHalfEdgeView::OnObjectsTorus()
-{
-	m_bCube = FALSE;
-	m_bTorus = TRUE;
-	m_bTeapot = FALSE;
-	m_bIcosahedron = FALSE;
-	m_bSimpleCube = FALSE;
-	InvalidateRect(NULL, FALSE);
-}
-
-// 简单立方体
-void CHalfEdgeView::OnObjectsSimplecube()
-{
-	m_bCube = FALSE;
-	m_bTorus = FALSE;
-	m_bTeapot = FALSE;
-	m_bIcosahedron = FALSE;
-	m_bSimpleCube = TRUE;
-	InvalidateRect(NULL, FALSE);
-}
 
 void CHalfEdgeView::display()
 {
-	if (m_bPoint == TRUE)
-	{
-		glPointSize(3.0f);
-		glBegin(GL_POINTS);
-		glVertex2f(0.0f, 0.0f);
-		glVertex2f(1.0f, 0.0f);
-		glVertex2f(0.0f, 1.0f);
-		glEnd();
-	}
-	if (m_bLine == TRUE)
-	{
-		glBegin(GL_LINES);
-		glVertex2f(0.0f, 0.0f);
-		glVertex2f(1.0f, 0.0f);
-		glEnd();
-	}
-	if (m_bTriangle == TRUE)
-	{
-		glBegin(GL_TRIANGLES);
-		glVertex2f(0.0f, 0.0f);
-		glVertex2f(2.0f, 0.0f);
-		glVertex2f(0.0f, 2.0f);
-		glEnd();
-	}
-	if (m_bPolygon == TRUE)
-	{
-		glBegin(GL_POLYGON);
-		glVertex2f(0.0f, 0.0f);
-		glVertex2f(3.0f, 0.0f);
-		glVertex2f(4.0f, 3.0f);
-		glVertex2f(1.5f, 6.0f);
-		glVertex2f(-1.0f, 3.0f);
-		glEnd();
-	}
-	//Replace the current matrix with Identity Matrix
 	glLoadIdentity();
-	glTranslatef(0.0f, 0.0f, -5.0f);
-	glRotatef(-30.0f, 1.0f, 1.0f, 0.0f);
-	//Draw a Cube
-	if (m_bCube)
+	glTranslatef(m_xPos, m_yPos - 1, -5.0f);
+	glRotatef(m_xAngle, 1.0f, 0.0f, 0.0f);
+	glRotatef(m_yAngle, 0.0f, 1.0f, 0.0f);
+	// Frame 13:
+	//		获得doc并操控sourceTree;
+	CHalfEdgeDoc *pDoc = GetDocument();
+	if (pDoc->sourceManager->count != 0)
 	{
-		glutWireCube(1.0f);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		long nodesSize = (pDoc->sourceManager->out_vertices_list)[0].size();
+		glBegin(GL_TRIANGLES);
+		for (long i = 0; i < nodesSize; i++)
+		{
+			glNormal3f((pDoc->sourceManager->out_normals_list)[0][i].x, (pDoc->sourceManager->out_normals_list)[0][i].y, (pDoc->sourceManager->out_normals_list)[0][i].z);
+			glVertex3f((pDoc->sourceManager->out_vertices_list)[0][i].x, (pDoc->sourceManager->out_vertices_list)[0][i].y, (pDoc->sourceManager->out_vertices_list)[0][i].z);
+		}
+		glEnd();
 	}
-	//Draw a Torus
-	if (m_bTorus)
-	{
-		glutWireTorus(0.5f, 1.0f, 50, 50);
-	}
-	//Draw a Teapot
-	if (m_bTeapot)
-	{
-		glutWireTeapot(1.0f);
-	}
-	//Draw a Icosahedron
-	if (m_bIcosahedron)
-	{
-		glutWireIcosahedron();
-	}
-	//Draw a cube by specifying the vertices individually
-	if (m_bSimpleCube)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
 
-		//Front Face
-		glBegin(GL_POLYGON);
-		glVertex3f(-1.0f, -1.0f, 0.0f);
-		glVertex3f(1.0f, -1.0f, 0.0f);
-		glVertex3f(1.0f, 1.0f, 0.0f);
-		glVertex3f(-1.0f, 1.0f, 0.0f);
-		glEnd();
-		//Back Face
-		glBegin(GL_POLYGON);
-		glVertex3f(-1.0f, -1.0f, -1.0f);
-		glVertex3f(-1.0f, 1.0f, -1.0f);
-		glVertex3f(1.0f, 1.0f, -1.0f);
-		glVertex3f(1.0f, -1.0f, -1.0f);
-		glEnd();
-		//Left Face
-		glBegin(GL_POLYGON);
-		glVertex3f(-1.0f, -1.0f, 0.0f);
-		glVertex3f(-1.0f, 1.0f, 0.0f);
-		glVertex3f(-1.0f, 1.0f, -1.0f);
-		glVertex3f(-1.0f, -1.0f, -1.0f);
-		glEnd();
-		//Right Face
-		glBegin(GL_POLYGON);
-		glVertex3f(1.0f, -1.0f, 0.0f);
-		glVertex3f(1.0f, -1.0f, -1.0f);
-		glVertex3f(1.0f, 1.0f, -1.0f);
-		glVertex3f(1.0f, 1.0f, 0.0f);
-		glEnd();
-		//Top Face
-		glBegin(GL_POLYGON);
-		glVertex3f(-1.0f, 1.0f, 0.0f);
-		glVertex3f(1.0f, 1.0f, 0.0f);
-		glVertex3f(1.0f, 1.0f, -1.0f);
-		glVertex3f(-1.0f, 1.0f, -1.0f);
-		glEnd();
-		//Botton Face
-		glBegin(GL_POLYGON);
-		glVertex3f(-1.0f, -1.0f, 0.0f);
-		glVertex3f(-1.0f, -1.0f, -1.0f);
-		glVertex3f(1.0f, -1.0f, -1.0f);
-		glVertex3f(1.0f, -1.0f, 0.0f);
-		glEnd();
-	}
 }
 
 // CHalfEdgeView 诊断
@@ -345,11 +219,30 @@ BOOL CHalfEdgeView::myInit()
 		return FALSE;
 	}
 	//背景色定义为黑色
-	::glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	//
-	::glClearDepth(1.0f);
+	glClearDepth(1.0f);
 	//深度检测
-	::glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
+	//反走样
+	glEnable(GL_POINT_SMOOTH);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//光照模型
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, NoLight);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, LowLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, BrightLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, BrightLight);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, EmissiveLight);
+	glLightfv(GL_LIGHT1, GL_EMISSION, EmissiveLight);	
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	glMateriali(GL_FRONT, GL_SHININESS, 128);
 	return TRUE;
 }
 
@@ -473,4 +366,47 @@ BOOL CHalfEdgeView::OnEraseBkgnd(CDC* pDC)
 	// return CView::OnEraseBkgnd(pDC);
 	// Now:
 	return TRUE;
+}
+
+// Frame 15:
+//		工具栏事件处理
+void CHalfEdgeView::OnButton32772()
+{
+	// TODO:  在此添加命令处理程序代码
+	m_xPos -= 0.1f;
+}
+
+
+void CHalfEdgeView::OnButton32782()
+{
+	// TODO:  在此添加命令处理程序代码
+	m_yPos += 0.1f;
+}
+
+
+void CHalfEdgeView::OnButton32784()
+{
+	// TODO:  在此添加命令处理程序代码
+	m_xPos += 0.1f;
+}
+
+
+void CHalfEdgeView::OnButton32785()
+{
+	// TODO:  在此添加命令处理程序代码
+	m_yPos -= 0.1f;
+}
+
+
+void CHalfEdgeView::OnButton32787()
+{
+	// TODO:  在此添加命令处理程序代码
+	m_yAngle -= 5.0f;
+}
+
+
+void CHalfEdgeView::OnButton32788()
+{
+	// TODO:  在此添加命令处理程序代码
+	m_yAngle += 5.0f;
 }

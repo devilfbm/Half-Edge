@@ -30,6 +30,7 @@ END_MESSAGE_MAP()
 CHalfEdgeDoc::CHalfEdgeDoc()
 {
 	// TODO:  在此添加一次性构造代码
+	sourceManager = new SourceManager();
 
 }
 
@@ -142,7 +143,13 @@ BOOL CHalfEdgeDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	if (!CDocument::OnOpenDocument(lpszPathName))
 		return FALSE;
 
+	// Frame 12:
+	//		在Unicode字符集中，使用T2A与A2T可以有效解决wchar与char的转换问题
+	USES_CONVERSION;
+	char *p = T2A(lpszPathName);
+	
 	// TODO:  在此添加您专用的创建代码
-
+	sourceManager->Clear();
+	sourceManager->Add(p);
 	return TRUE;
 }

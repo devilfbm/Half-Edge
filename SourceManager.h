@@ -19,8 +19,8 @@
 #ifndef _SOURCEMANAGER_H
 #define _SOURCEMANAGER_H
 #include <stdio.h>
-#include <vector>
 #include <string>
+#include <vector>
 #include <glm\glm.hpp>
 class SourceManager
 {
@@ -29,7 +29,8 @@ public:
 	~SourceManager();
 
 	void Add(const char * path);
-	void Remove(const char * path);
+	void Remove(const char * path);//TO DO
+	void Clear();
 	bool LoadOBJ(
 		const char * path,
 		std::vector<glm::vec3> & out_vertices,
@@ -40,6 +41,7 @@ public:
 	std::vector<std::vector<glm::vec3>> out_vertices_list;
 	std::vector<std::vector<glm::vec2>> out_uvs_list;
 	std::vector<std::vector<glm::vec3>> out_normals_list;
+	int count;
 };
 
 #endif

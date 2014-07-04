@@ -50,6 +50,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 	m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT));
 
+	if (!m_ToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_ALIGN_TOP | CBRS_GRIPPER |
+		CBRS_TOOLTIPS/*, CRect(0,0,0,0)*/) || !m_ToolBar.LoadToolBar(IDR_TOOLBAR1))
+	{
+		TRACE0("未能创建工具栏\n");
+		return FALSE;
+	}
+
+	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0);  // 显示工具栏
 	return 0;
 }
 
@@ -81,5 +89,4 @@ void CMainFrame::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CMainFrame 消息处理程序
 
